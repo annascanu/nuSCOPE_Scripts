@@ -65,10 +65,10 @@ int main()
 
     TH1F *hEnuDUNE = new TH1F("hEnuDUNE", "True neutrino energy comparison;E_{#nu}^{true} [GeV];Number of events", 50, 0, 20000);
     TH1F *hEnuT2K  = new TH1F("hEnuT2K", "True neutrino energy comparison;E_{#nu}^{true} [GeV];Number of events", 50, 0, 20000);
-    TH1F *hDeltaDUNE = new TH1F("hDeltaDUNE", "Comparison between true and reconstructed neutrino energy;#DeltaE [GeV];Entries", 50, -500, 2500);
-    TH1F *hDeltaT2K  = new TH1F("hDeltaT2K",  "Comparison between true and reconstructed neutrino energy;#DeltaE [GeV];Entries", 50, -500, 2500);
-    TH1F *hDeltaDUNE_Weighted = new TH1F("hDeltaDUNE_Weighted", "Weighted difference between true and reconstructed neutrino energy;#DeltaE/E_{#nu}^{true};Entries", 50, -1, 2);
-    TH1F *hDeltaT2K_Weighted  = new TH1F("hDeltaT2K_Weighted",  "Weighted difference between true and reconstructed neutrino energy;#DeltaE/E_{#nu}^{true};Entries", 50, -1, 2);
+    TH1F *hDeltaDUNE = new TH1F("hDeltaDUNE", "Comparison between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco} [GeV];Entries", 50, -500, 2500);
+    TH1F *hDeltaT2K  = new TH1F("hDeltaT2K",  "Comparison between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco} [GeV];Entries", 50, -500, 2500);
+    TH1F *hDeltaDUNE_Weighted = new TH1F("hDeltaDUNE_Weighted", "Weighted difference between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco}/E_{#nu}^{true};Entries", 50, -1, 2);
+    TH1F *hDeltaT2K_Weighted  = new TH1F("hDeltaT2K_Weighted",  "Weighted difference between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco}/E_{#nu}^{true};Entries", 50, -1, 2);
     TH1F *hDUNE_CCQE  = new TH1F("hDUNE_CCQE", "DUNE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 20000);
     TH1F *hDUNE_RES   = new TH1F("hDUNE_RES",  "DUNE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 20000);
     TH1F *hDUNE_2p2h  = new TH1F("hDUNE_2p2h", "DUNE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 20000);
@@ -77,6 +77,17 @@ int main()
     TH1F *hT2K_RES    = new TH1F("hT2K_RES",   "T2K events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 12000);
     TH1F *hT2K_2p2h   = new TH1F("hT2K_2p2h",  "T2K events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 12000);
     TH1F *hT2K_Other  = new TH1F("hT2K_Other", "T2K events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 12000);
+    TH1F *hDUNE_Delta_CCQE = new TH1F("hDUNE_Delta_CCQE", "DUNE difference between true and reco #nu energy divided by channel;E_{#nu}^{true} - E_{nu}^{reco} [GeV];Entries", 50, -500, 2500);
+    TH1F *hDUNE_Delta_RES  = new TH1F("hDUNE_Delta_RES",  "DUNE RES DeltaE;#DeltaE [GeV];Entries", 50, -500, 2500);
+    TH1F *hDUNE_Delta_2p2h = new TH1F("hDUNE_Delta_2p2h", "DUNE 2p2h DeltaE;#DeltaE [GeV];Entries", 50, -500, 2500);
+    TH1F *hDUNE_Delta_Other= new TH1F("hDUNE_Delta_Other","DUNE Other DeltaE;#DeltaE [GeV];Entries", 50, -500, 2500);
+    TH1F *hT2K_Delta_CCQE  = new TH1F("hT2K_Delta_CCQE",  "T2K CCQE DeltaE;#DeltaE [GeV];Entries", 50, -500, 2500);
+    TH1F *hT2K_Delta_RES   = new TH1F("hT2K_Delta_RES",   "T2K RES DeltaE;#DeltaE [GeV];Entries", 50, -500, 2500);
+    TH1F *hT2K_Delta_2p2h  = new TH1F("hT2K_Delta_2p2h",  "T2K 2p2h DeltaE;#DeltaE [GeV];Entries", 50, -500, 2500);
+    TH1F *hT2K_Delta_Other = new TH1F("hT2K_Delta_Other", "T2K Other DeltaE;#DeltaE [GeV];Entries", 50, -500, 2500);
+    // TH1F *hDUNE_Weighted_CCQE = new TH1F("hDUNE_Weighted_CCQE", "DUNE CCQE Weighted DeltaE;#DeltaE/E_{#nu}^{true};Entries", 50, -1, 2);
+    // TH1F *hDUNE_Weighted_RES  = new TH1F("hDUNE_Weighted_RES",  "DUNE RES Weighted DeltaE;#DeltaE/E_{#nu}^{true};Entries", 50, -1, 2);
+    // ...
 
     int ModeDUNE, ModeT2K;
     Float_t Enu_true_DUNE, Enu_true_T2K, Erecoil_minerva, ELep, Enu_QE;
@@ -91,6 +102,8 @@ int main()
     std::vector<Float_t> Enu_Difference_DUNE, Enu_Difference_T2K, Enu_diff_weighted_DUNE, Enu_diff_weighted_T2K;
     std::vector<Float_t> Enu_CCQE_DUNE, Enu_RES_DUNE, Enu_2p2h_DUNE, Enu_Other_DUNE;
     std::vector<Float_t> Enu_CCQE_T2K, Enu_RES_T2K, Enu_2p2h_T2K, Enu_Other_T2K;
+    std::vector<Float_t> Delta_CCQE_DUNE, Delta_RES_DUNE, Delta_2p2h_DUNE, Delta_Other_DUNE;
+    std::vector<Float_t> Delta_CCQE_T2K, Delta_RES_T2K, Delta_2p2h_T2K, Delta_Other_T2K;
     Enu_Difference_DUNE.resize(tDUNE->GetEntries());
     Enu_Difference_T2K.resize(tT2K->GetEntries());
     Enu_diff_weighted_DUNE.resize(tDUNE->GetEntries());
@@ -104,13 +117,25 @@ int main()
         Enu_Difference_DUNE[i] = Enu_true_DUNE - (Erecoil_minerva + ELep);
         Enu_diff_weighted_DUNE[i] = (Enu_true_DUNE - (Erecoil_minerva + ELep))/Enu_true_DUNE;
         if (ModeDUNE == 1)
+        {
             Enu_CCQE_DUNE.push_back(Enu_true_DUNE);
+            Delta_CCQE_DUNE.push_back(Enu_true_DUNE - (Erecoil_minerva + ELep));
+        }
         else if (ModeDUNE == 2)
+        {
             Enu_2p2h_DUNE.push_back(Enu_true_DUNE);
+            Delta_2p2h_DUNE.push_back(Enu_true_DUNE - (Erecoil_minerva + ELep));
+        }
         else if (ModeDUNE == 11 || ModeDUNE == 12 || ModeDUNE == 13)
+        {
             Enu_RES_DUNE.push_back(Enu_true_DUNE);
+            Delta_RES_DUNE.push_back(Enu_true_DUNE - (Erecoil_minerva + ELep));
+        }
         else
+        {
             Enu_Other_DUNE.push_back(Enu_true_DUNE);
+            Delta_Other_DUNE.push_back(Enu_true_DUNE - (Erecoil_minerva + ELep));
+        }
         //hDeltaDUNE->Fill(Enu_true_DUNE-(Erecoil_minerva+ELep)); // Apparently this doesn't work?
     }
     for (Long64_t i=0; i<tT2K->GetEntries(); i++)
@@ -122,13 +147,25 @@ int main()
         Enu_Difference_T2K[i] = Enu_true_T2K - Enu_QE;
         Enu_diff_weighted_T2K[i] = (Enu_true_T2K - Enu_QE)/Enu_true_T2K;
         if (ModeT2K == 1)
+        {
             Enu_CCQE_T2K.push_back(Enu_true_T2K);
+            Delta_CCQE_T2K.push_back(Enu_true_T2K - Enu_QE);
+        }
         else if (ModeT2K == 2)
+        {
             Enu_2p2h_T2K.push_back(Enu_true_T2K);
+            Delta_2p2h_T2K.push_back(Enu_true_T2K - Enu_QE);
+        }
         else if (ModeT2K == 11 || ModeT2K == 12 || ModeT2K == 13)
+        {    
             Enu_RES_T2K.push_back(Enu_true_T2K);
+            Delta_RES_T2K.push_back(Enu_true_T2K - Enu_QE);
+        }
         else
+        {    
             Enu_Other_T2K.push_back(Enu_true_T2K);
+            Delta_Other_T2K.push_back(Enu_true_T2K - Enu_QE);
+        }
     }
 
     // ----------------------------------------------------------------
@@ -256,6 +293,38 @@ int main()
     leg_T2K_Enu_Modes->Draw();
 
     c_T2K_Enu_Modes->SaveAs("first_plots/T2K_CCQE_2p2h_RES_Other.pdf");
+
+    // --------------------------------------------------
+    //      DeltaE mode-separated plots for DUNE
+    // --------------------------------------------------
+    TCanvas *c_DUNE_Delta_Modes = new TCanvas("c_DUNE_Delta_Modes", "DeltaE Mode separation DUNE", 800, 600);
+    for (int i = 0; i < Delta_CCQE_DUNE.size(); i++)
+        hDUNE_Delta_CCQE->Fill(Delta_CCQE_DUNE[i]);
+    for (int i = 0; i < Delta_2p2h_DUNE.size(); i++)
+        hDUNE_Delta_2p2h->Fill(Delta_2p2h_DUNE[i]);
+    for (int i = 0; i < Delta_RES_DUNE.size(); i++)
+        hDUNE_Delta_RES->Fill(Delta_RES_DUNE[i]);
+    for (int i = 0; i < Delta_Other_DUNE.size(); i++)
+        hDUNE_Delta_Other->Fill(Delta_Other_DUNE[i]);
+
+    hDUNE_Delta_CCQE->SetLineColor(kRed);
+    hDUNE_Delta_2p2h->SetLineColor(kBlue);
+    hDUNE_Delta_RES->SetLineColor(kGreen+2);
+    hDUNE_Delta_Other->SetLineColor(kMagenta);
+
+    hDUNE_Delta_CCQE->Draw("hist");
+    hDUNE_Delta_2p2h->Draw("hist same");
+    hDUNE_Delta_RES->Draw("hist same");
+    hDUNE_Delta_Other->Draw("hist same");
+
+    auto leg_DUNE_Delta_Modes = new TLegend(0.6,0.6,0.88,0.88);
+    leg_DUNE_Delta_Modes->AddEntry(hDUNE_Delta_CCQE,"CCQE");
+    leg_DUNE_Delta_Modes->AddEntry(hDUNE_Delta_2p2h,"2p2h");
+    leg_DUNE_Delta_Modes->AddEntry(hDUNE_Delta_RES, "RES");
+    leg_DUNE_Delta_Modes->AddEntry(hDUNE_Delta_Other,"Other");
+    leg_DUNE_Delta_Modes->Draw();
+
+    c_DUNE_Delta_Modes->SaveAs("first_plots/DUNE_DeltaE_CCQE_2p2h_RES_Other.pdf");
 
     // Close files
     file_DUNE->Close();
