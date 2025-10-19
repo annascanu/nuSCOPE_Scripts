@@ -326,6 +326,38 @@ int main()
 
     c_DUNE_Delta_Modes->SaveAs("first_plots/DUNE_DeltaE_CCQE_2p2h_RES_Other.pdf");
 
+    // --------------------------------------------------
+    //      DeltaE mode-separated plots for T2K
+    // --------------------------------------------------
+    TCanvas *c_T2K_Delta_Modes = new TCanvas("c_T2K_Delta_Modes", "DeltaE Mode separation T2K", 800, 600);
+    for (int i = 0; i < Delta_CCQE_T2K.size(); i++)
+        hT2K_Delta_CCQE->Fill(Delta_CCQE_T2K[i]);
+    for (int i = 0; i < Delta_2p2h_T2K.size(); i++)
+        hT2K_Delta_2p2h->Fill(Delta_2p2h_T2K[i]);
+    for (int i = 0; i < Delta_RES_T2K.size(); i++)
+        hT2K_Delta_RES->Fill(Delta_RES_T2K[i]);
+    for (int i = 0; i < Delta_Other_T2K.size(); i++)
+        hT2K_Delta_Other->Fill(Delta_Other_T2K[i]);
+
+    hT2K_Delta_CCQE->SetLineColor(kRed);
+    hT2K_Delta_2p2h->SetLineColor(kBlue);
+    hT2K_Delta_RES->SetLineColor(kGreen+2);
+    hT2K_Delta_Other->SetLineColor(kMagenta);
+
+    hT2K_Delta_CCQE->Draw("hist");
+    hT2K_Delta_2p2h->Draw("hist same");
+    hT2K_Delta_RES->Draw("hist same");
+    hT2K_Delta_Other->Draw("hist same");
+
+    auto leg_T2K_Delta_Modes = new TLegend(0.6,0.6,0.88,0.88);
+    leg_T2K_Delta_Modes->AddEntry(hT2K_Delta_CCQE,"CCQE");
+    leg_T2K_Delta_Modes->AddEntry(hT2K_Delta_2p2h,"2p2h");
+    leg_T2K_Delta_Modes->AddEntry(hT2K_Delta_RES, "RES");
+    leg_T2K_Delta_Modes->AddEntry(hT2K_Delta_Other,"Other");
+    leg_T2K_Delta_Modes->Draw();
+
+    c_T2K_Delta_Modes->SaveAs("first_plots/T2K_DeltaE_CCQE_2p2h_RES_Other.pdf");
+
     // Close files
     file_DUNE->Close();
     file_T2K->Close();
