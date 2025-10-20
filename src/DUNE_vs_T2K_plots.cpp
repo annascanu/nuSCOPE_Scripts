@@ -11,7 +11,7 @@
 // To compile: c++ DUNE_vs_T2K_plots.cpp `root-config --cflags --libs` -o plots.out
 
 // ------------------------------------------------------------------------------------------------
-// Helper function to process one tree and fill histograms
+//                Function to process one tree and fill histograms
 // ------------------------------------------------------------------------------------------------
 void ProcessTree(TTree* tree,
                  TH1F* hEnu, TH1F* hDelta, TH1F* hDeltaWeighted,
@@ -74,8 +74,8 @@ int main()
     // ----------------------------------------------------------------------------------------------
     //                                   Open files and TTrees
     // ----------------------------------------------------------------------------------------------
-    TFile *file_DUNE = TFile::Open("flat_Valencia_13815.root");
-    TFile *file_T2K  = TFile::Open("flat_Valencia_2382.root");
+    TFile *file_DUNE = TFile::Open("../flat_Valencia_13815.root");
+    TFile *file_T2K  = TFile::Open("../flat_Valencia_2382.root");
 
     if (!file_DUNE || !file_T2K) {
         printf("Error: could not open files.\n");
@@ -104,14 +104,14 @@ int main()
     hFluxDUNE->SetTitle("DUNE neutrino flux;E_{#nu} [GeV];Unosc #nu_{#mu}/m^{2}/POT/GeV");
     c1->SetTitle("DUNE neutrino flux");
     hFluxDUNE->Draw("hist");
-    c1->SaveAs("DUNE_T2K_Plots/DUNE_flux.pdf");
+    c1->SaveAs("../DUNE_T2K_Plots/DUNE_flux.pdf");
 
     TCanvas *c1_T2K = new TCanvas("c1_T2K", "T2K flux", 800, 600);
     hFluxT2K->GetXaxis()->SetRangeUser(0, 9);
     hFluxT2K->SetTitle("T2K neutrino flux;E_{#nu} [GeV];Unosc #nu_{#mu}/m^{2}/POT/GeV");
     c1_T2K->SetTitle("T2K neutrino flux");
     hFluxT2K->Draw("hist");
-    c1_T2K->SaveAs("DUNE_T2K_Plots/T2K_flux.pdf");
+    c1_T2K->SaveAs("../DUNE_T2K_Plots/T2K_flux.pdf");
 
     // -------------------------------------------------------------------------------------------------------------
     //                                   Histogram definitions 
@@ -173,7 +173,7 @@ int main()
     leg2->AddEntry(hEnuT2K, "T2K", "l");
     leg2->Draw();
 
-    c2->SaveAs("DUNE_T2K_Plots/true_energy_comparison.pdf");
+    c2->SaveAs("../DUNE_T2K_Plots/true_energy_comparison.pdf");
 
     // DeltaE (E_true - E_reco) comparison
     hDeltaDUNE->SetLineColor(kRed);
@@ -188,7 +188,7 @@ int main()
     leg3->AddEntry(hDeltaT2K, "T2K", "l");
     leg3->Draw();
 
-    c3->SaveAs("DUNE_T2K_Plots/delta_energy_comparison.pdf");
+    c3->SaveAs("../DUNE_T2K_Plots/delta_energy_comparison.pdf");
 
     // Weighted DeltaE [(E_true - E_reco)/E_true] comparison
     hDeltaDUNE_Weighted->SetLineColor(kRed);
@@ -203,7 +203,7 @@ int main()
     leg3_2->AddEntry(hDeltaT2K_Weighted, "T2K", "l");
     leg3_2->Draw();
 
-    c3_2->SaveAs("DUNE_T2K_Plots/delta_energy_comparison_weighted.pdf");
+    c3_2->SaveAs("../DUNE_T2K_Plots/delta_energy_comparison_weighted.pdf");
 
     // Mode-separated DUNE plot
     hDUNE_CCQE->SetLineColor(kGreen+2);
@@ -224,7 +224,7 @@ int main()
     leg4->AddEntry(hDUNE_Other, "Other", "l");
     leg4->Draw();
 
-    c4->SaveAs("DUNE_T2K_Plots/DUNE_modes.pdf");
+    c4->SaveAs("../DUNE_T2K_Plots/DUNE_modes.pdf");
 
     // Mode-separated T2K plot
     hT2K_CCQE->SetLineColor(kGreen+2);
@@ -245,7 +245,7 @@ int main()
     leg5->AddEntry(hT2K_Other, "Other", "l");
     leg5->Draw();
 
-    c5->SaveAs("DUNE_T2K_Plots/T2K_modes.pdf");
+    c5->SaveAs("../DUNE_T2K_Plots/T2K_modes.pdf");
 
     // DUNE DeltaE (E_true - E_reco) by mode
     hDUNE_Delta_CCQE->SetLineColor(kGreen+2);
@@ -266,7 +266,7 @@ int main()
     leg6->AddEntry(hDUNE_Delta_Other, "Other", "l");
     leg6->Draw();
 
-    c6->SaveAs("DUNE_T2K_Plots/DUNE_deltaE_modes.pdf");
+    c6->SaveAs("../DUNE_T2K_Plots/DUNE_deltaE_modes.pdf");
 
     // T2K DeltaE (E_true - E_reco) by mode
     hT2K_Delta_CCQE->SetLineColor(kGreen+2);
@@ -288,7 +288,7 @@ int main()
     leg7->AddEntry(hT2K_Delta_Other, "Other", "l");
     leg7->Draw();
 
-    c7->SaveAs("DUNE_T2K_Plots/T2K_deltaE_modes.pdf");
+    c7->SaveAs("../DUNE_T2K_Plots/T2K_deltaE_modes.pdf");
 
     // ----------------------------------------------------------------------------------------------
     //                          Comparison DUNE & T2K separated by mode
@@ -327,7 +327,7 @@ int main()
     leg8->AddEntry(hT2K_Other, "T2K Other", "l");
     leg8->Draw();
 
-    c8->SaveAs("DUNE_T2K_Plots/DUNE_T2K_modes_comparison.pdf");
+    c8->SaveAs("../DUNE_T2K_Plots/DUNE_T2K_modes_comparison.pdf");
 
     // Close files
     file_DUNE->Close();
