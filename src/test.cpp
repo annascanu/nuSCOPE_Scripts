@@ -4,11 +4,12 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TStyle.h"
+#include "TLatex.h"
 #include <iostream>
 #include <cmath>
 #include <string>
 
-// To compile: c++ DUNE_vs_T2K_plots.cpp `root-config --cflags --libs` -o plots.out
+// To compile: c++ test.cpp `root-config --cflags --libs` -o test.out
 
 int main(int argc, char ** argv) 
 {
@@ -56,14 +57,14 @@ int main(int argc, char ** argv)
 
     TCanvas *c1 = new TCanvas("c1", "DUNE flux", 800, 600);
     hFluxDUNE->GetXaxis()->SetRangeUser(0, 20);
-    hFluxDUNE->SetTitle("DUNE neutrino flux;E_{#nu} [MeV];Unosc #nu_{#mu}/m^{2}/POT/GeV");
+    hFluxDUNE->SetTitle("DUNE neutrino flux;E_{#nu} [GeV];Unosc #nu_{#mu}/m^{2}/POT/GeV");
     c1->SetTitle("DUNE neutrino flux");
     hFluxDUNE->Draw("hist");
     c1->SaveAs("../Test_new_plots/DUNE_flux.pdf");
 
     TCanvas *c1_T2K = new TCanvas("c1_T2K", "T2K flux", 800, 600);
     hFluxT2K->GetXaxis()->SetRangeUser(0, 9);
-    hFluxT2K->SetTitle("T2K neutrino flux;E_{#nu} [MeV];Unosc #nu_{#mu}/m^{2}/POT/GeV");
+    hFluxT2K->SetTitle("T2K neutrino flux;E_{#nu} [GeV];Unosc #nu_{#mu}/m^{2}/POT/GeV");
     c1_T2K->SetTitle("T2K neutrino flux");
     hFluxT2K->Draw("hist");
     c1_T2K->SaveAs("../Test_new_plots/T2K_flux.pdf");
@@ -71,32 +72,42 @@ int main(int argc, char ** argv)
     // -------------------------------------------------------------------------------------------------------------
     //                                   Histogram definitions 
     // -------------------------------------------------------------------------------------------------------------
-    TH1F *hEnuDUNE = new TH1F("hEnuDUNE", "True neutrino energy comparison;E_{#nu}^{true} [MeV];Entries", 50, 0, 10);
-    TH1F *hEnuT2K  = new TH1F("hEnuT2K", "True neutrino energy comparison;E_{#nu}^{true} [MeV];Entries", 50, 0, 10);
-    TH1F *hDeltaDUNE = new TH1F("hDeltaDUNE", "Comparison between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco} [MeV];Entries", 50, -0.5, 2.5);
-    TH1F *hDeltaT2K  = new TH1F("hDeltaT2K", "Comparison between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco} [MeV];Entries", 50, -0.5, 2.5);
+    TH1F *hEnuDUNE = new TH1F("hEnuDUNE", "True neutrino energy comparison;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
+    TH1F *hEnuT2K  = new TH1F("hEnuT2K", "True neutrino energy comparison;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
+    TH1F *hDeltaDUNE = new TH1F("hDeltaDUNE", "Comparison between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
+    TH1F *hDeltaT2K  = new TH1F("hDeltaT2K", "Comparison between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
     TH1F *hDeltaDUNE_Weighted = new TH1F("hDeltaDUNE_Weighted", "Weighted difference between true and reconstructed neutrino energy;(E_{#nu}^{true} - E_{nu}^{reco})/E_{#nu}^{true};Entries", 50, -1, 2);
     TH1F *hDeltaT2K_Weighted  = new TH1F("hDeltaT2K_Weighted", "Weighted difference between true and reconstructed neutrino energy;(E_{#nu}^{true} - E_{nu}^{reco})/E_{#nu}^{true};Entries", 50, -1, 2);
 
-    TH1F *hDUNE_CCQE  = new TH1F("hDUNE_CCQE", "DUNE events divided by channels;E_{#nu}^{true} [MeV];Entries", 50, 0, 10);
-    TH1F *hDUNE_RES   = new TH1F("hDUNE_RES", "DUNE events divided by channels;E_{#nu}^{true} [MeV];Entries", 50, 0, 10);
-    TH1F *hDUNE_2p2h  = new TH1F("hDUNE_2p2h", "DUNE events divided by channels;E_{#nu}^{true} [MeV];Entries", 50, 0, 10);
-    TH1F *hDUNE_Other = new TH1F("hDUNE_Other","DUNE events divided by channels;E_{#nu}^{true} [MeV];Entries", 50, 0, 10);
+    TH1F *hDUNE_CCQE  = new TH1F("hDUNE_CCQE", "DUNE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
+    TH1F *hDUNE_RES   = new TH1F("hDUNE_RES", "DUNE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
+    TH1F *hDUNE_2p2h  = new TH1F("hDUNE_2p2h", "DUNE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
+    TH1F *hDUNE_Other = new TH1F("hDUNE_Other","DUNE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
 
-    TH1F *hT2K_CCQE   = new TH1F("hT2K_CCQE", "T2K events divided by channels;E_{#nu}^{true} [MeV];Entries", 50, 0, 12);
-    TH1F *hT2K_RES    = new TH1F("hT2K_RES", "T2K events divided by channels;E_{#nu}^{true} [MeV];Entries", 50, 0, 12);
-    TH1F *hT2K_2p2h   = new TH1F("hT2K_2p2h", "T2K events divided by channels;E_{#nu}^{true} [MeV];Entries", 50, 0, 12);
-    TH1F *hT2K_Other  = new TH1F("hT2K_Other","T2K events divided by channels;E_{#nu}^{true} [MeV];Entries", 50, 0, 12);
+    TH1F *hT2K_CCQE   = new TH1F("hT2K_CCQE", "T2K events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 12);
+    TH1F *hT2K_RES    = new TH1F("hT2K_RES", "T2K events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 12);
+    TH1F *hT2K_2p2h   = new TH1F("hT2K_2p2h", "T2K events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 12);
+    TH1F *hT2K_Other  = new TH1F("hT2K_Other","T2K events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 12);
 
-    TH1F *hDUNE_Delta_CCQE = new TH1F("hDUNE_Delta_CCQE", "DUNE difference between true and reco #nu energy divided by channel;E_{#nu}^{true} - E_{nu}^{reco} [MeV];Entries", 50, -0.5, 2.5);
-    TH1F *hDUNE_Delta_RES  = new TH1F("hDUNE_Delta_RES", "DUNE RES DeltaE;#DeltaE [MeV];Entries", 50, -0.5, 2.5);
-    TH1F *hDUNE_Delta_2p2h = new TH1F("hDUNE_Delta_2p2h","DUNE 2p2h DeltaE;#DeltaE [MeV];Entries", 50, -0.5, 2.5);
-    TH1F *hDUNE_Delta_Other= new TH1F("hDUNE_Delta_Other","DUNE Other DeltaE;#DeltaE [MeV];Entries", 50, -0.5, 2.5);
+    TH1F *hDUNE_Delta_CCQE = new TH1F("hDUNE_Delta_CCQE", "DUNE difference between true and reco #nu energy divided by channel;E_{#nu}^{true} - E_{nu}^{reco} [GeV];Entries", 100, 0, 1);
+    TH1F *hDUNE_Delta_RES  = new TH1F("hDUNE_Delta_RES", "DUNE RES DeltaE;#DeltaE [GeV];Entries", 200, 0, 1);
+    TH1F *hDUNE_Delta_2p2h = new TH1F("hDUNE_Delta_2p2h","DUNE 2p2h DeltaE;#DeltaE [GeV];Entries", 200, 0, 1);
+    TH1F *hDUNE_Delta_Other= new TH1F("hDUNE_Delta_Other","DUNE Other DeltaE;#DeltaE [GeV];Entries", 200, 0, 1);
 
-    TH1F *hT2K_Delta_CCQE  = new TH1F("hT2K_Delta_CCQE","T2K CCQE DeltaE;E_{#nu}^{true} - E_{#nu}^{reco} [MeV];Entries", 50, -0.5, 2.5);
-    TH1F *hT2K_Delta_RES   = new TH1F("hT2K_Delta_RES","T2K RES DeltaE;E_{#nu}^{true} - E_{#nu}^{reco} [MeV];Entries", 50, -0.5, 2.5);
-    TH1F *hT2K_Delta_2p2h  = new TH1F("hT2K_Delta_2p2h","T2K 2p2h DeltaE;E_{#nu}^{true} - E_{#nu}^{reco} [MeV];Entries", 50, -0.5, 2.5);
-    TH1F *hT2K_Delta_Other = new TH1F("hT2K_Delta_Other","T2K Other DeltaE;E_{#nu}^{true} - E_{#nu}^{reco} [MeV];Entries", 50, -0.5, 2.5);
+    TH1F *hT2K_Delta_CCQE  = new TH1F("hT2K_Delta_CCQE","T2K CCQE DeltaE;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
+    TH1F *hT2K_Delta_RES   = new TH1F("hT2K_Delta_RES","T2K RES DeltaE;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
+    TH1F *hT2K_Delta_2p2h  = new TH1F("hT2K_Delta_2p2h","T2K 2p2h DeltaE;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
+    TH1F *hT2K_Delta_Other = new TH1F("hT2K_Delta_Other","T2K Other DeltaE;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
+
+    TH1F *hDUNE_0pi0n = new TH1F("hDUNE_0pi0n", "DUNE 0pi0n energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 200, 0, 1);
+    TH1F *hDUNE_0piNn = new TH1F("hDUNE_0piNn", "DUNE 0piNn energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 200, 0, 1);
+    TH1F *hDUNE_Npi0n = new TH1F("hDUNE_Npi0n", "DUNE Npi0n energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 200, 0, 1);
+    TH1F *hDUNE_NpiNn = new TH1F("hDUNE_NpiNn", "DUNE NpiNn energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 200, 0, 1);
+
+    TH1F *hT2K_0pi0n = new TH1F("hT2K_0pi0n", "DUNE 0pi0n energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
+    TH1F *hT2K_0piNn = new TH1F("hT2K_0piNn", "DUNE 0piNn energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
+    TH1F *hT2K_Npi0n = new TH1F("hT2K_Npi0n", "DUNE Npi0n energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
+    TH1F *hT2K_NpiNn = new TH1F("hT2K_NpiNn", "DUNE NpiNn energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
 
     // Testing another way to process trees. Example:
     //TH1D* h_test = new TH1D("h_test_name");
@@ -126,17 +137,25 @@ int main(int argc, char ** argv)
     tT2K   -> Project("hT2K_RES", "Enu_true", "flagCC0pi && ( (Mode==11) || (Mode==12) || (Mode==13) )", "hist");
     tT2K   -> Project("hT2K_Other", "Enu_true", "flagCC0pi * (Mode!=1) * (Mode!=2) * (Mode!=11) * (Mode!=12) * (Mode!=13)", "hist");
 
-    // DUNE Energy bias by mode
+    // DUNE Energy bias by mode or topology
     tDUNE  -> Project("hDUNE_Delta_CCQE", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC * (Mode==1)", "hist"); // CCQE = Mode 1
     tDUNE  -> Project("hDUNE_Delta_2p2h", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC * (Mode==2)", "hist"); // 2p2h = Mode 2 
     tDUNE  -> Project("hDUNE_Delta_RES", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ( (Mode==11) || (Mode==12) || (Mode==13) )", "hist"); // RES = Mode 11, 12, 13
     tDUNE  -> Project("hDUNE_Delta_Other", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC * (Mode!=1) * (Mode!=2) * (Mode!=11) * (Mode!=12) * (Mode!=13)", "hist"); // "Other"
+    tDUNE  -> Project("hDUNE_0pi0n", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ((Sum$((abs(pdg)==2112))==0) && (Sum$((abs(pdg)==211))==0))", "hist"); // No pions (211), no neutrons (2112)
+    tDUNE  -> Project("hDUNE_0piNn", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ((Sum$((abs(pdg)==2112))>0) && (Sum$((abs(pdg)==211))==0))", "hist"); // No pions, N neutrons
+    tDUNE  -> Project("hDUNE_Npi0n", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ((Sum$((abs(pdg)==2112))==0) && (Sum$((abs(pdg)==211))>0))", "hist"); // N pions, no neutrons
+    tDUNE  -> Project("hDUNE_NpiNn", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ((Sum$((abs(pdg)==2112))>0) && (Sum$((abs(pdg)==211))>0))", "hist"); // N pions, N neutrons
 
-    // T2K Energy bias by mode
+    // T2K Energy bias by mode or topology
     tT2K   -> Project("hT2K_Delta_CCQE", "Enu_true-Enu_QE", "flagCC0pi * (Mode==1)", "hist");
     tT2K   -> Project("hT2K_Delta_2p2h", "Enu_true-Enu_QE", "flagCC0pi * (Mode==2)", "hist");
     tT2K   -> Project("hT2K_Delta_RES", "Enu_true-Enu_QE", "flagCC0pi && ( (Mode==11) || (Mode==12) || (Mode==13) )", "hist");
     tT2K   -> Project("hT2K_Delta_Other", "Enu_true-Enu_QE", "flagCC0pi * (Mode!=1) * (Mode!=2) * (Mode!=11) * (Mode!=12) * (Mode!=13)", "hist");
+    // tT2K   -> Project("hT2K_0pi0n", "Enu_true-(Erecoil_minerva+ELep)", "", "hist");
+    // tT2K   -> Project("hT2K_0piNn", "Enu_true-(Erecoil_minerva+ELep)", "", "hist");
+    // tT2K   -> Project("hT2K_Npi0n", "Enu_true-(Erecoil_minerva+ELep)", "", "hist");
+    // tT2K   -> Project("hT2K_NpiNn", "Enu_true-(Erecoil_minerva+ELep)", "", "hist");
 
     // ----------------------------------------------------------------------------------------------
     //                                       Plotting
@@ -229,26 +248,98 @@ int main(int argc, char ** argv)
 
     c5->SaveAs("../Test_new_plots/T2K_modes.pdf");
 
-    // DUNE DeltaE (E_true - E_reco) by mode
-    hDUNE_Delta_CCQE->SetLineColor(kGreen+2);
-    hDUNE_Delta_RES->SetLineColor(kBlue);
-    hDUNE_Delta_2p2h->SetLineColor(kMagenta);
-    hDUNE_Delta_Other->SetLineColor(kOrange);
+    // DUNE Energy bias split by mode of interaction and topology
+    TCanvas *c6 = new TCanvas("c6", "DUNE DeltaE by channel", 1000, 800);
+    c6->Divide(1, 2);
 
-    TCanvas *c6 = new TCanvas("c6", "DUNE DeltaE by channel", 800, 600);
+    // -------------------------
+    // Pad 1: Interaction modes
+    // -------------------------
+    c6->cd(1);
+    gPad->SetMargin(0.12, 0.05, 0.1, 0.08);
+
+    hDUNE_Delta_CCQE->SetLineColor(kRed);
+    hDUNE_Delta_RES->SetLineColor(kBlue);
+    hDUNE_Delta_2p2h->SetLineColor(kGreen+2);
+    hDUNE_Delta_Other->SetLineColor(kMagenta+1);
+
+    hDUNE_Delta_CCQE->SetLineWidth(1);
+    hDUNE_Delta_RES->SetLineWidth(1);
+    hDUNE_Delta_2p2h->SetLineWidth(1);
+    hDUNE_Delta_Other->SetLineWidth(1);
+
+    hDUNE_Delta_CCQE->GetXaxis()->SetTitle("E_{true} - E_{reco} [GeV]");
+    hDUNE_Delta_CCQE->GetYaxis()->SetTitle("Events");
+    hDUNE_Delta_CCQE->GetXaxis()->SetTitleSize(0.05);
+    hDUNE_Delta_CCQE->GetYaxis()->SetTitleSize(0.05);
+    hDUNE_Delta_CCQE->GetYaxis()->SetTitleOffset(1.2);
+
+    hDUNE_Delta_CCQE->SetTitle("");
     hDUNE_Delta_CCQE->Draw("hist");
     hDUNE_Delta_RES->Draw("hist same");
     hDUNE_Delta_2p2h->Draw("hist same");
     hDUNE_Delta_Other->Draw("hist same");
 
-    TLegend *leg6 = new TLegend(0.7, 0.7, 0.9, 0.9);
-    leg6->AddEntry(hDUNE_Delta_CCQE, "CCQE", "l");
-    leg6->AddEntry(hDUNE_Delta_RES, "RES", "l");
-    leg6->AddEntry(hDUNE_Delta_2p2h, "2p2h", "l");
-    leg6->AddEntry(hDUNE_Delta_Other, "Other", "l");
-    leg6->Draw();
+    TLegend *leg_modes = new TLegend(0.7, 0.7, 0.9, 0.9);
+    leg_modes->SetTextSize(0.035);
+    leg_modes->SetBorderSize(0);
+    leg_modes->SetFillStyle(0);
+    leg_modes->AddEntry(hDUNE_Delta_CCQE, "CCQE", "l");
+    leg_modes->AddEntry(hDUNE_Delta_RES, "RES", "l");
+    leg_modes->AddEntry(hDUNE_Delta_2p2h, "2p2h", "l");
+    leg_modes->AddEntry(hDUNE_Delta_Other, "Other", "l");
+    leg_modes->Draw();
 
-    c6->SaveAs("../Test_new_plots/DUNE_deltaE_modes.pdf");
+    TLatex label1;
+    label1.SetNDC();
+    label1.SetTextSize(0.04);
+    label1.DrawLatex(0.15, 0.93, "DUNE: Energy bias by interaction mode");
+
+    // ---------------------------------
+    //   Pad 2: Final-state topology
+    // ---------------------------------
+    c6->cd(2);
+    gPad->SetMargin(0.12, 0.05, 0.15, 0.08);
+
+    hDUNE_0pi0n->SetLineColor(kOrange+7);
+    hDUNE_0piNn->SetLineColor(kCyan+1);
+    hDUNE_Npi0n->SetLineColor(kViolet-6);
+    hDUNE_NpiNn->SetLineColor(kTeal+3);
+
+    hDUNE_0pi0n->SetLineWidth(1);
+    hDUNE_0piNn->SetLineWidth(1);
+    hDUNE_Npi0n->SetLineWidth(1);
+    hDUNE_NpiNn->SetLineWidth(1);
+
+    hDUNE_0pi0n->GetXaxis()->SetTitle("E_{true} - E_{reco} [GeV]");
+    hDUNE_0pi0n->GetYaxis()->SetTitle("Events");
+    hDUNE_0pi0n->GetXaxis()->SetTitleSize(0.05);
+    hDUNE_0pi0n->GetYaxis()->SetTitleSize(0.05);
+    hDUNE_0pi0n->GetYaxis()->SetTitleOffset(1.2);
+
+    hDUNE_0pi0n->SetTitle("");
+    hDUNE_0pi0n->Draw("hist");
+    hDUNE_0piNn->Draw("hist same");
+    hDUNE_Npi0n->Draw("hist same");
+    hDUNE_NpiNn->Draw("hist same");
+
+    TLegend *leg_topo = new TLegend(0.7, 0.7, 0.9, 0.9);
+    leg_topo->SetTextSize(0.035);
+    leg_topo->SetBorderSize(0);
+    leg_topo->SetFillStyle(0);
+    leg_topo->AddEntry(hDUNE_0pi0n, "0 #pi, 0 neutrons", "l");
+    leg_topo->AddEntry(hDUNE_0piNn, "0 #pi, N neutrons", "l");
+    leg_topo->AddEntry(hDUNE_Npi0n, "N #pi, 0 neutrons", "l");
+    leg_topo->AddEntry(hDUNE_NpiNn, "N #pi, N neutrons", "l");
+    leg_topo->Draw();
+
+    TLatex label2;
+    label2.SetNDC();
+    label2.SetTextSize(0.04);
+    label2.DrawLatex(0.15, 0.93, "DUNE: Energy bias by final-state topology");
+
+    // Save plot
+    c6->SaveAs("../Test_new_plots/DUNE_deltaE_modes_split.pdf");
 
     // T2K DeltaE (E_true - E_reco) by mode
     hT2K_Delta_CCQE->SetLineColor(kGreen+2);
@@ -257,7 +348,7 @@ int main(int argc, char ** argv)
     hT2K_Delta_Other->SetLineColor(kOrange);
 
     TCanvas *c7 = new TCanvas("c7", "T2K DeltaE by channel", 800, 600);
-    hT2K_Delta_CCQE->SetTitle("T2K #DeltaE = E_{#nu}^{true} - E_{#nu}^{reco} by channel;E_{#nu}^{true} - E_{#nu}^{reco} [MeV];Entries");
+    hT2K_Delta_CCQE->SetTitle("T2K #DeltaE = E_{#nu}^{true} - E_{#nu}^{reco} by channel;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries");
     hT2K_Delta_CCQE->Draw("hist");
     hT2K_Delta_RES->Draw("hist same");
     hT2K_Delta_2p2h->Draw("hist same");
@@ -275,7 +366,7 @@ int main(int argc, char ** argv)
     // ----------------------------------------------------------------------------------------------
     //                          Comparison DUNE & T2K separated by mode
     // ----------------------------------------------------------------------------------------------
-    TCanvas *c8 = new TCanvas("c8", "DeltaE mode comparison DUNE vs T2K", 800, 600);
+    TCanvas *c8 = new TCanvas("c8", "Mode comparison DUNE vs T2K", 800, 600);
     hDUNE_CCQE->SetLineColor(kRed);
     hT2K_CCQE->SetLineColor(kBlue);
     hDUNE_2p2h->SetLineColor(kGreen+2);
@@ -285,7 +376,7 @@ int main(int argc, char ** argv)
     hDUNE_Other->SetLineColor(kViolet-6);
     hT2K_Other->SetLineColor(kTeal+3);
 
-    hT2K_CCQE->SetTitle("#DeltaE = E_{#nu}^{true} - E_{#nu}^{reco} mode comparison DUNE vs T2K;E_{#nu}^{true} - E_{#nu}^{reco} [MeV];Entries");
+    hT2K_CCQE->SetTitle("E_{#nu}^{true} mode comparison DUNE vs T2K;E_{#nu}^{true} [GeV];Entries");
 
     hT2K_CCQE->Draw("hist");
     hDUNE_Other->Draw("hist same");
