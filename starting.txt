@@ -1,20 +1,12 @@
 Answer what the differences between these experiments are:
 - Compare the fluxes of the two experiments
 
-The T2K flux 
-
 - Compare the difference between the true neutrino energy distribution of the two experiments (Enu_true variable)
-
-...
 
 - Compare what the difference between the true and reconstructed neutrino energy is. For DUNE, this means plotting 
 Enu_true -  Erecoil_minerva - ELep and for T2K this means Enu_true – Enu_QE. You can also make the same plots but 
 weighted by the true neutrino energy (i.e. divide the previous formulas by Enu_true). 
 
-...
-
 - Compare the different types of reactions that happen for each experiment (i.e. separate the previous plots, with 
 the exception of the flux one, by the interaction code, called “Mode”). You can label Mode==1 as CCQE, Mode==2 is 
 2p2h, Modes 11, 12, 13 are RES (resonant interactions) and all other mode fall into the “Other” category.
-
-...
