@@ -11,7 +11,6 @@ nuSCOPE_Scripts/
 ├── src/
 │   └── test.cpp   # Macro to plot neutrino interactions for DUNE and T2K (more efficient, should become "main" macro)
 │   └── DUNE_T2K_plots.cpp   # Macro to plot neutrino interactions for DUNE and T2K (a bit slower)
-│   └── OLD_DUNE_vs_T2k_plots.cpp # Old version with no functions, just the first test
 │   └── nuSCOPE_EnergyBias.cpp   # Macro to perform studies on energy bias for nuSCOPE
 ├── Test_new_plots
 │   └── plots.pdf # A series of plots (which are "final" for the initial tests)
