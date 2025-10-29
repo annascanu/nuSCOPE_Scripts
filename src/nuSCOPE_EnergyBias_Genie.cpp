@@ -9,7 +9,8 @@
 #include <cmath>
 #include <string>
 
-// To compile: c++ nuSCOPE_EnergyBias.cpp `root-config --cflags --libs` -o nuscope_energybias.out
+// To compile: c++ nuSCOPE_EnergyBias_Genie.cpp `root-config --cflags --libs` -o nuscope_energybias_Genie.out
+static const int MAXCELLS = 1000;
 
 int main(int argc, char ** argv) 
 {
@@ -19,23 +20,26 @@ int main(int argc, char ** argv)
     //                                   Open file and TTree 
     // ----------------------------------------------------------------------------------------------
 
-    if (argc < 2) 
+    if (argc < 3) 
     {
-        std::cout << "Usage: \n- ./nuscope_energybias.out \n- name of the nuSCOPE .root file\n - name of the tagging .root file" << std::endl;
+        std::cout << "Usage: \n- ./nuscope_energybias_Genie.out \n- name of the nuSCOPE .root file\n - name of the tagging .root file" << std::endl;
         return 1;
     }
 
-    // /eos/project-n/neutrino-generators/generatorOutput/GENIE/nuSCOPE/nuSCOPE_LAr_total/3_04_02/AR23_20i_00_000/flat_vec_AR23_20i_00_000_14_3_04_02_nuSCOPE_WC_total_0000.root
+    // Paths of the nuSCOPE Genie output file and tagging file
+    // /afs/cern.ch/work/a/ascanu/public/nuSCOPE_Scripts/nuSCOPE_Trees/nuSCOPE_test.root
+    // /eos/project-n/neutrino-generators/enubet/nuflux-run8.5GeV/nutag/TaggingEfficiencyAr23.root
 
     TFile *file_NuSCOPE = TFile::Open(argv[1]);
+    TFile *file_tagging = TFile::Open(argv[2]);
 
-    if (!file_NuSCOPE) 
+    if (!file_NuSCOPE || !file_tagging) 
     {
         printf("Error: could not open one of the files.\n");
         return 1;
     }
 
-    TTree *tNuSCOPE = (TTree*) file_NuSCOPE->Get("FlatTree_VARS");
+    TTree *tNuSCOPE = (TTree*) file_NuSCOPE->Get("gRooTracker");
 
     if (!tNuSCOPE) 
     {
@@ -43,19 +47,8 @@ int main(int argc, char ** argv)
         return 1;
     }
 
-    // ----------------------------------------------------------------------------------------------
-    //                                    Nu_mu flux for nuSCOPE
-    // ----------------------------------------------------------------------------------------------
-    TH1F *hFluxNuSCOPE = (TH1F*) file_NuSCOPE->Get("FlatTree_FLUX");
-
-    hFluxNuSCOPE->SetLineColor(kRed);
-
-    TCanvas *c1 = new TCanvas("c1", "NuSCOPE flux", 800, 600);
-    hFluxNuSCOPE->GetXaxis()->SetRangeUser(0, 20);
-    hFluxNuSCOPE->SetTitle("nuSCOPE neutrino flux;E_{#nu} [GeV];Unosc #nu_{#mu}/m^{2}/POT/GeV");
-    c1->SetTitle("nuSCOPE neutrino flux");
-    hFluxNuSCOPE->Draw("hist");
-    c1->SaveAs("../nuSCOPE_Plots/noTaggingEfficiency/nuSCOPE_flux.pdf");
+    // Tagging histogram
+    TH1F *hTaggingEfficiency = (TH1F*) file_tagging->Get("hIE_TagEff");
 
     // -------------------------------------------------------------------------------------------------------------
     //                                         Histogram definitions 
@@ -79,38 +72,66 @@ int main(int argc, char ** argv)
     TH1F *hNuSCOPE_Npi0n = new TH1F("hNuSCOPE_Npi0n", "nuSCOPE Npi0n energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 200, 0, 1);
     TH1F *hNuSCOPE_NpiNn = new TH1F("hNuSCOPE_NpiNn", "nuSCOPE NpiNn energy bias;E_{#nu}^{true} - E_{#nu}^{reco} [GeV];Entries", 200, 0, 1);
 
+    std::cout << "\n\n Created histograms.\n";
+
     // -------------------------------------------------------------------------------------------------------------
-    //                                    Filling histograms from TTree
+    //                                    Filling histograms with variables
     // -------------------------------------------------------------------------------------------------------------
-    // True neutrino energy
-    tNuSCOPE -> Project("hEnuNuSCOPE", "Enu_true", "flagCCINC", "hist");
+    int NParticles, Particles_PDG[MAXCELLS], Particles_Status[MAXCELLS];
+    double Particle_X4[MAXCELLS][4], Particle_P4[MAXCELLS][4]; // 4-position and 4-momentum
 
-    // Energy bias
-    tNuSCOPE -> Project("hDeltaNuSCOPE", "Enu_true - (Erecoil_minerva+ELep)", "flagCCINC", "hist");
+    tNuSCOPE->SetBranchAddress("StdHepN", &NParticles);
+    tNuSCOPE->SetBranchAddress("StdHepStatus", &Particles_Status);
+    tNuSCOPE->SetBranchAddress("StdHepPdg", &Particles_PDG);
+    tNuSCOPE->SetBranchAddress("StdHepX4", &Particle_X4);
+    tNuSCOPE->SetBranchAddress("StdHepP4", &Particle_P4);
 
-    // Weighted energy bias
-    tNuSCOPE -> Project("hDeltaNuSCOPE_Weighted", "(Enu_true-(Erecoil_minerva+ELep))/Enu_true", "flagCCINC", "hist");
+    std::cout << "\n\n Saved branches in the tree.\n";
 
-    // NuSCOPE Mode separation
-    tNuSCOPE -> Project("hNuSCOPE_CCQE", "Enu_true", "flagCCINC * (Mode==1)", "hist"); // CCQE = Mode 1
-    tNuSCOPE -> Project("hNuSCOPE_2p2h", "Enu_true", "flagCCINC * (Mode==2)", "hist"); // 2p2h = Mode 2 
-    tNuSCOPE -> Project("hNuSCOPE_RES", "Enu_true", "flagCCINC && ( (Mode==11) || (Mode==12) || (Mode==13) )", "hist"); // RES = Mode 11, 12, 13
-    tNuSCOPE -> Project("hNuSCOPE_Other", "Enu_true", "flagCCINC * (Mode!=1) * (Mode!=2) * (Mode!=11) * (Mode!=12) * (Mode!=13)", "hist"); // "Other"
+    double Erecoil_minerva, Elep, Enu_true, E_reco;
 
-    // NuSCOPE Energy bias by mode or topology
-    tNuSCOPE -> Project("hNuSCOPE_Delta_CCQE", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC * (Mode==1)", "hist"); // CCQE = Mode 1
-    tNuSCOPE -> Project("hNuSCOPE_Delta_2p2h", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC * (Mode==2)", "hist"); // 2p2h = Mode 2 
-    tNuSCOPE -> Project("hNuSCOPE_Delta_RES", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ( (Mode==11) || (Mode==12) || (Mode==13) )", "hist"); // RES = Mode 11, 12, 13
-    tNuSCOPE -> Project("hNuSCOPE_Delta_Other", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC * (Mode!=1) * (Mode!=2) * (Mode!=11) * (Mode!=12) * (Mode!=13)", "hist"); // "Other"
-    tNuSCOPE -> Project("hNuSCOPE_0pi0n", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ((Sum$((abs(pdg)==2112))==0) && (Sum$((abs(pdg)==211))==0))", "hist"); // No pions (211), no neutrons (2112)
-    tNuSCOPE -> Project("hNuSCOPE_0piNn", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ((Sum$((abs(pdg)==2112))>0) && (Sum$((abs(pdg)==211))==0))", "hist"); // No pions, N neutrons
-    tNuSCOPE -> Project("hNuSCOPE_Npi0n", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ((Sum$((abs(pdg)==2112))==0) && (Sum$((abs(pdg)==211))>0))", "hist"); // N pions, no neutrons
-    tNuSCOPE -> Project("hNuSCOPE_NpiNn", "Enu_true-(Erecoil_minerva+ELep)", "flagCCINC && ((Sum$((abs(pdg)==2112))>0) && (Sum$((abs(pdg)==211))>0))", "hist"); // N pions, N neutrons
+    Long64_t nentries = tNuSCOPE->GetEntries();
+    for (Long64_t i = 0; i < nentries; i++) 
+    {
+        tNuSCOPE->GetEntry(i);
+    
+        Enu_true = 0;
+        Erecoil_minerva = 0;
+        Elep = 0;
+        E_reco = 0;
+
+        for (int j = 0; j < NParticles; j++)
+        {
+            if (i == 35 || i == 40)
+                std::cout << "What is this: E = " << Particle_P4[j][3] << "? And what is this, px = " << Particle_P4[j][0] << "? And what is this, py = " << Particle_P4[j][1] << "? And what is this, pz = " << Particle_P4[j][2] << "?\n";
+
+            if (Particles_Status[j] == 1) // Means these are final state
+            {
+                if (Particles_PDG[j] == 13)
+                    Elep += Particle_P4[j][3];
+                else if (Particles_PDG[j] == 2122 || abs(Particles_PDG[j]) == 211)
+                    Erecoil_minerva += ( Particle_P4[j][3] - sqrt(Particle_P4[j][3]*Particle_P4[j][3] - Particle_P4[j][1]*Particle_P4[j][1] - Particle_P4[j][2]*Particle_P4[j][2] - Particle_P4[j][0]*Particle_P4[j][0]) );
+                else if (Particles_PDG[j] < 2000)
+                    Erecoil_minerva += Particle_P4[j][3];
+            }
+            else if (Particles_Status[j] == 0) // For neutrinos in initial state
+            {
+                if (abs(Particles_PDG[j]) == 14)
+                    Enu_true += Particle_P4[j][3];
+            }
+        }
+
+        E_reco = Erecoil_minerva + Elep;
+
+        hEnuNuSCOPE->Fill(Enu_true);
+        hDeltaNuSCOPE->Fill(Enu_true - E_reco);
+        if (Enu_true > 0)
+            hDeltaNuSCOPE_Weighted->Fill( (Enu_true - E_reco)/Enu_true );
+    }
 
     // ----------------------------------------------------------------------------------------------
     //                                       Plotting
     // ----------------------------------------------------------------------------------------------
-
     // True E_nu
     hEnuNuSCOPE->SetLineColor(kRed);
 
@@ -121,7 +142,7 @@ int main(int argc, char ** argv)
     leg2->AddEntry(hEnuNuSCOPE, "nuSCOPE", "l");
     leg2->Draw();
 
-    c2->SaveAs("../nuSCOPE_Plots/noTaggingEfficiency/true_energy.pdf");
+    c2->SaveAs("../nuSCOPE_Plots/withTaggingEfficiency/true_energy.pdf");
 
     // Energy bias (E_true - E_reco) 
     hDeltaNuSCOPE->SetLineColor(kRed);
@@ -133,7 +154,7 @@ int main(int argc, char ** argv)
     leg3->AddEntry(hDeltaNuSCOPE, "nuSCOPE", "l");
     leg3->Draw();
 
-    c3->SaveAs("../nuSCOPE_Plots/noTaggingEfficiency/energy_bias.pdf");
+    c3->SaveAs("../nuSCOPE_Plots/withTaggingEfficiency/energy_bias.pdf");
 
     // Weighted energy bias [(E_true - E_reco)/E_true]
     hDeltaNuSCOPE_Weighted->SetLineColor(kRed);
@@ -145,8 +166,9 @@ int main(int argc, char ** argv)
     leg3_2->AddEntry(hDeltaNuSCOPE_Weighted, "nuSCOPE", "l");
     leg3_2->Draw();
 
-    c3_2->SaveAs("../nuSCOPE_Plots/noTaggingEfficiency/delta_energy_weighted.pdf");
+    c3_2->SaveAs("../nuSCOPE_Plots/withTaggingEfficiency/delta_energy_weighted.pdf");
 
+    /*
     // Mode-separated NuSCOPE plot
     hNuSCOPE_CCQE->SetLineColor(kGreen+2);
     hNuSCOPE_RES->SetLineColor(kBlue);
@@ -166,7 +188,7 @@ int main(int argc, char ** argv)
     leg4->AddEntry(hNuSCOPE_Other, "Other", "l");
     leg4->Draw();
 
-    c4->SaveAs("../nuSCOPE_Plots/noTaggingEfficiency/nuSCOPE_modes.pdf");
+    c4->SaveAs("../nuSCOPE_Plots/withTaggingEfficiency/nuSCOPE_modes.pdf");
 
     // NuSCOPE Energy bias split by mode of interaction and topology
     TCanvas *c6 = new TCanvas("c6", "nuSCOPE DeltaE by channel", 1000, 800);
@@ -258,7 +280,8 @@ int main(int argc, char ** argv)
     label2.SetTextSize(0.04);
     label2.DrawLatex(0.15, 0.93, "nuSCOPE: Energy bias by final-state topology");
 
-    c6->SaveAs("../nuSCOPE_Plots/noTaggingEfficiency/nuSCOPE_deltaE_modes_split.pdf");
+    c6->SaveAs("../nuSCOPE_Plots/withTaggingEfficiency/nuSCOPE_deltaE_modes_split.pdf");
+    */
 
     // Close files
     file_NuSCOPE->Close();
