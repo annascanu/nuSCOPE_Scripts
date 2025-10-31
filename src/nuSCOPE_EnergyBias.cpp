@@ -63,6 +63,7 @@ int main(int argc, char ** argv)
     TH1F *hEnuNuSCOPE = new TH1F("hEnuNuSCOPE", "True neutrino energy comparison;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
     TH1F *hDeltaNuSCOPE = new TH1F("hDeltaNuSCOPE", "Comparison between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
     TH1F *hDeltaNuSCOPE_Weighted = new TH1F("hDeltaNuSCOPE_Weighted", "Weighted difference between true and reconstructed neutrino energy;(E_{#nu}^{true} - E_{nu}^{reco})/E_{#nu}^{true};Entries", 50, -1, 2);
+    TH1F *hLepEnergyNuSCOPE = new TH1F("hLepEnergyNuSCOPE", "Lepton energy;E_{lep} [GeV];Entries", 50, 0, 10);
 
     TH1F *hNuSCOPE_CCQE  = new TH1F("hNuSCOPE_CCQE", "nuSCOPE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
     TH1F *hNuSCOPE_RES   = new TH1F("hNuSCOPE_RES", "nuSCOPE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
@@ -84,6 +85,7 @@ int main(int argc, char ** argv)
     // -------------------------------------------------------------------------------------------------------------
     // True neutrino energy
     tNuSCOPE -> Project("hEnuNuSCOPE", "Enu_true", "flagCCINC", "hist");
+    tNuSCOPE -> Project("hLepEnergyNuSCOPE", "ELep", "flagCCINC", "hist");
 
     // Energy bias
     tNuSCOPE -> Project("hDeltaNuSCOPE", "Enu_true - (Erecoil_minerva+ELep)", "flagCCINC", "hist");
@@ -110,6 +112,11 @@ int main(int argc, char ** argv)
     // ----------------------------------------------------------------------------------------------
     //                                       Plotting
     // ----------------------------------------------------------------------------------------------
+
+    hLepEnergyNuSCOPE->SetLineColor(kRed);
+    TCanvas *cLep = new TCanvas("cLep", "Lepton energy", 800, 600);
+    hLepEnergyNuSCOPE->Draw("hist");
+    cLep->SaveAs("../nuSCOPE_Plots/noTaggingEfficiency/lepton_energy.pdf");
 
     // True E_nu
     hEnuNuSCOPE->SetLineColor(kRed);

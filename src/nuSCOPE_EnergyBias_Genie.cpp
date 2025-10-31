@@ -10,7 +10,7 @@
 #include <string>
 
 // To compile: c++ nuSCOPE_EnergyBias_Genie.cpp `root-config --cflags --libs` -o nuscope_energybias_Genie.out
-static const int MAXCELLS = 1000;
+static const int MAXCELLS = 100;
 
 int main(int argc, char ** argv) 
 {
@@ -53,8 +53,10 @@ int main(int argc, char ** argv)
     // -------------------------------------------------------------------------------------------------------------
     //                                         Histogram definitions 
     // -------------------------------------------------------------------------------------------------------------
-    TH1F *hEnuNuSCOPE = new TH1F("hEnuNuSCOPE", "True neutrino energy comparison;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
-    TH1F *hDeltaNuSCOPE = new TH1F("hDeltaNuSCOPE", "Comparison between true and reconstructed neutrino energy;E_{#nu}^{true} - E_{nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
+    TH1F *hELepNuSCOPE = new TH1F("hELepNuSCOPE", "Lepton energy;E_{lep} [GeV];Entries", 50, 0, 10);
+    
+    TH1F *hEnuNuSCOPE = new TH1F("hEnuNuSCOPE", "True neutrino energy;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
+    TH1F *hDeltaNuSCOPE = new TH1F("hDeltaNuSCOPE", "Energy bias;E_{#nu}^{true} - E_{nu}^{reco} [GeV];Entries", 50, -0.5, 2.5);
     TH1F *hDeltaNuSCOPE_Weighted = new TH1F("hDeltaNuSCOPE_Weighted", "Weighted difference between true and reconstructed neutrino energy;(E_{#nu}^{true} - E_{nu}^{reco})/E_{#nu}^{true};Entries", 50, -1, 2);
 
     TH1F *hNuSCOPE_CCQE  = new TH1F("hNuSCOPE_CCQE", "nuSCOPE events divided by channels;E_{#nu}^{true} [GeV];Entries", 50, 0, 10);
@@ -78,13 +80,14 @@ int main(int argc, char ** argv)
     //                                    Filling histograms with variables
     // -------------------------------------------------------------------------------------------------------------
     int NParticles, Particles_PDG[MAXCELLS], Particles_Status[MAXCELLS];
-    double Particle_X4[MAXCELLS][4], Particle_P4[MAXCELLS][4]; // 4-position and 4-momentum
+    double eventWeight, Particle_X4[MAXCELLS][4], Particle_P4[MAXCELLS][4]; // 4-position and 4-momentum
 
     tNuSCOPE->SetBranchAddress("StdHepN", &NParticles);
     tNuSCOPE->SetBranchAddress("StdHepStatus", &Particles_Status);
     tNuSCOPE->SetBranchAddress("StdHepPdg", &Particles_PDG);
     tNuSCOPE->SetBranchAddress("StdHepX4", &Particle_X4);
     tNuSCOPE->SetBranchAddress("StdHepP4", &Particle_P4);
+    tNuSCOPE->SetBranchAddress("EvtWght", &eventWeight);
 
     std::cout << "\n\n Saved branches in the tree.\n";
 
@@ -102,15 +105,12 @@ int main(int argc, char ** argv)
 
         for (int j = 0; j < NParticles; j++)
         {
-            if (i == 35 || i == 40)
-                std::cout << "What is this: E = " << Particle_P4[j][3] << "? And what is this, px = " << Particle_P4[j][0] << "? And what is this, py = " << Particle_P4[j][1] << "? And what is this, pz = " << Particle_P4[j][2] << "?\n";
-
             if (Particles_Status[j] == 1) // Means these are final state
             {
                 if (Particles_PDG[j] == 13)
                     Elep += Particle_P4[j][3];
                 else if (Particles_PDG[j] == 2122 || abs(Particles_PDG[j]) == 211)
-                    Erecoil_minerva += ( Particle_P4[j][3] - sqrt(Particle_P4[j][3]*Particle_P4[j][3] - Particle_P4[j][1]*Particle_P4[j][1] - Particle_P4[j][2]*Particle_P4[j][2] - Particle_P4[j][0]*Particle_P4[j][0]) );
+                    Erecoil_minerva += ( Particle_P4[j][3] - sqrt(Particle_P4[j][3]*Particle_P4[j][3] - Particle_P4[j][0]*Particle_P4[j][0] - Particle_P4[j][1]*Particle_P4[j][1] - Particle_P4[j][2]*Particle_P4[j][2]) );
                 else if (Particles_PDG[j] < 2000)
                     Erecoil_minerva += Particle_P4[j][3];
             }
@@ -123,15 +123,22 @@ int main(int argc, char ** argv)
 
         E_reco = Erecoil_minerva + Elep;
 
-        hEnuNuSCOPE->Fill(Enu_true);
-        hDeltaNuSCOPE->Fill(Enu_true - E_reco);
+        hELepNuSCOPE->Fill(Elep);
+        hEnuNuSCOPE->Fill(Enu_true, eventWeight);
+        hDeltaNuSCOPE->Fill((Enu_true - E_reco), eventWeight);
         if (Enu_true > 0)
-            hDeltaNuSCOPE_Weighted->Fill( (Enu_true - E_reco)/Enu_true );
+            hDeltaNuSCOPE_Weighted->Fill( ((Enu_true - E_reco)/Enu_true) , eventWeight);
     }
 
     // ----------------------------------------------------------------------------------------------
     //                                       Plotting
     // ----------------------------------------------------------------------------------------------
+    
+    hELepNuSCOPE->SetLineColor(kRed);
+    TCanvas *cLep = new TCanvas("cLep", "Lepton energy", 800, 600);
+    hELepNuSCOPE->Draw("hist");
+    cLep->SaveAs("../nuSCOPE_Plots/withTaggingEfficiency/lepton_energy.pdf");
+    
     // True E_nu
     hEnuNuSCOPE->SetLineColor(kRed);
 
